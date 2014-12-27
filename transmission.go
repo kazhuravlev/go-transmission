@@ -414,25 +414,25 @@ func (t *TransmissionClient) TorrentAdd(req TorrentAddRequest) (Response, error)
 }
 
 func (t *TransmissionClient) TorrentRemove(ids []int, delete_local_data bool) error {
-	_, err := t.CallMethod("torrent-remove", map[string]interface {}{
-		"ids": ids,
+	_, err := t.CallMethod("torrent-remove", map[string]interface{}{
+		"ids":               ids,
 		"delete-local-data": delete_local_data,
 	})
 	return err
 }
 
-func (t *TransmissionClient) TorrentSetLocation (ids []int, location string, move bool) error {
-	_, err := t.CallMethod("torrent-set-location", map[string]interface {}{
-		"ids": ids,
+func (t *TransmissionClient) TorrentSetLocation(ids []int, location string, move bool) error {
+	_, err := t.CallMethod("torrent-set-location", map[string]interface{}{
+		"ids":      ids,
 		"location": location,
-		"move": move,
+		"move":     move,
 	})
 	return err
 }
 
-func (t *TransmissionClient) TorrentRenamePath (ids []int, path string, name string) error {
-	_, err := t.CallMethod("torrent-rename-path", map[string]interface {}{
-		"ids": ids,
+func (t *TransmissionClient) TorrentRenamePath(ids []int, path string, name string) error {
+	_, err := t.CallMethod("torrent-rename-path", map[string]interface{}{
+		"ids":  ids,
 		"path": path,
 		"name": name,
 	})
