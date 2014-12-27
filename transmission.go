@@ -36,6 +36,58 @@ type Response struct {
 	Tag       int       `json:"tag"`
 }
 
+type TorrentSetRequest struct {
+	BandwidthPriority   int             `json:"bandwidthPriority"`
+	DownloadLimit       int             `json:"downloadLimit"`
+	DownloadLimited     bool            `json:"downloadLimited"`
+	FilesWanted         []int           `json:"files-wanted"`
+	FilesUnwanted       []int           `json:"files-unwanted"`
+	HonorsSessionLimits bool            `json:"honorsSessionLimits"`
+	Ids                 []int           `json:"ids"`
+	Location            string          `json:"location"`
+	PeerLimit           int             `json:"peer-limit"`
+	PriorityHigh        []int           `json:"priority-high"`
+	PriorityLow         []int           `json:"priority-low"`
+	PriorityNormal      []int           `json:"priority-normal"`
+	QueuePosition       int             `json:"queuePosition"`
+	SeedIdleLimit       int             `json:"seedIdleLimit"`
+	SeedIdleMode        int             `json:"seedIdleMode"`
+	SeedRatioLimit      float32         `json:"seedRatioLimit"`
+	SeedRatioMode       int             `json:"seedRatioMode"`
+	TrackerAdd          []string        `json:"trackerAdd"`
+	TrackerRemove       []int           `json:"trackerRemove"`
+	TrackerReplace      [][]interface{} `json:"trackerReplace"`
+	UploadLimit         int             `json:"uploadLimit"`
+	UploadLimited       bool            `json:"uploadLimited"`
+}
+
+func (t TorrentSetRequest) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"bandwidthPriority":   t.BandwidthPriority,
+		"downloadLimit":       t.DownloadLimit,
+		"downloadLimited":     t.DownloadLimited,
+		"files-wanted":        t.FilesWanted,
+		"files-unwanted":      t.FilesUnwanted,
+		"honorsSessionLimits": t.HonorsSessionLimits,
+		"ids":             t.Ids,
+		"location":        t.Location,
+		"peer-limit":      t.PeerLimit,
+		"priority-high":   t.PriorityHigh,
+		"priority-low":    t.PriorityLow,
+		"priority-normal": t.PriorityNormal,
+		"queuePosition":   t.QueuePosition,
+		"seedIdleLimit":   t.SeedIdleLimit,
+		"seedIdleMode":    t.SeedIdleMode,
+		"seedRatioLimit":  t.SeedRatioLimit,
+		"seedRatioMode":   t.SeedRatioMode,
+		"trackerAdd":      t.TrackerAdd,
+		"trackerRemove":   t.TrackerRemove,
+		"trackerReplace":  t.TrackerReplace,
+		"uploadLimit":     t.UploadLimit,
+		"uploadLimited":   t.UploadLimited,
+	}
+}
+
 type Torrent struct {
 	ActivityDate            int        `json:"activityDate"`
 	AddedDate               int        `json:"addedDate"`
@@ -190,7 +242,7 @@ type TransmissionClient struct {
 	TagCounter int
 }
 
-func New(url, username, password string) (TransmissionClient, error) {
+func New(url, username, password string) (*TransmissionClient, error) {
 	t := &TransmissionClient{}
 	t.Url = url
 	t.Username = username
@@ -280,7 +332,7 @@ func (t *TransmissionClient) GetTorrents(ids []int, fields []string) ([]Torrent,
 	return resp.Arguments.Torrents, nil
 }
 
-func (t *TransmissionClient) TorrentStart (ids []int) error {
+func (t *TransmissionClient) TorrentStart(ids []int) error {
 	args := map[string]interface{}{
 		"ids": ids,
 	}
@@ -288,7 +340,7 @@ func (t *TransmissionClient) TorrentStart (ids []int) error {
 	return err
 }
 
-func (t *TransmissionClient) TorrentStartNow (ids []int) error {
+func (t *TransmissionClient) TorrentStartNow(ids []int) error {
 	args := map[string]interface{}{
 		"ids": ids,
 	}
@@ -296,7 +348,7 @@ func (t *TransmissionClient) TorrentStartNow (ids []int) error {
 	return err
 }
 
-func (t *TransmissionClient) TorrentStop (ids []int) error {
+func (t *TransmissionClient) TorrentStop(ids []int) error {
 	args := map[string]interface{}{
 		"ids": ids,
 	}
@@ -304,7 +356,7 @@ func (t *TransmissionClient) TorrentStop (ids []int) error {
 	return err
 }
 
-func (t *TransmissionClient) TorrentVerify (ids []int) error {
+func (t *TransmissionClient) TorrentVerify(ids []int) error {
 	args := map[string]interface{}{
 		"ids": ids,
 	}
@@ -312,11 +364,16 @@ func (t *TransmissionClient) TorrentVerify (ids []int) error {
 	return err
 }
 
-func (t *TransmissionClient) TorrentReannounce (ids []int) error {
+func (t *TransmissionClient) TorrentReannounce(ids []int) error {
 	args := map[string]interface{}{
 		"ids": ids,
 	}
 	_, err := t.CallMethod("torrent-reannounce", args)
+	return err
+}
+
+func (t *TransmissionClient) TorrentSet(req TorrentSetRequest) error {
+	_, err := t.CallMethod("torrent-set", req.AsMap())
 	return err
 }
 
