@@ -3,12 +3,9 @@ package transmission_api
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	log "github.com/Sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"reflect"
-	"torrent"
 )
 
 const (
@@ -266,7 +263,7 @@ func (t *TransmissionClient) CallMethod(method_name string, arguments map[string
 	return resp, nil
 }
 
-func (t TransmissionClient) GetTorrents(ids []int, fields []string) ([]Torrent, error) {
+func (t *TransmissionClient) GetTorrents(ids []int, fields []string) ([]Torrent, error) {
 	if len(fields) == 0 {
 		fields = GetTorrentJSONFieldsList()
 	}
@@ -281,6 +278,46 @@ func (t TransmissionClient) GetTorrents(ids []int, fields []string) ([]Torrent, 
 		return []Torrent{}, err
 	}
 	return resp.Arguments.Torrents, nil
+}
+
+func (t *TransmissionClient) TorrentStart (ids []int) error {
+	args := map[string]interface{}{
+		"ids": ids,
+	}
+	_, err := t.CallMethod("torrent-start", args)
+	return err
+}
+
+func (t *TransmissionClient) TorrentStartNow (ids []int) error {
+	args := map[string]interface{}{
+		"ids": ids,
+	}
+	_, err := t.CallMethod("torrent-start-now", args)
+	return err
+}
+
+func (t *TransmissionClient) TorrentStop (ids []int) error {
+	args := map[string]interface{}{
+		"ids": ids,
+	}
+	_, err := t.CallMethod("torrent-stop", args)
+	return err
+}
+
+func (t *TransmissionClient) TorrentVerify (ids []int) error {
+	args := map[string]interface{}{
+		"ids": ids,
+	}
+	_, err := t.CallMethod("torrent-verify", args)
+	return err
+}
+
+func (t *TransmissionClient) TorrentReannounce (ids []int) error {
+	args := map[string]interface{}{
+		"ids": ids,
+	}
+	_, err := t.CallMethod("torrent-reannounce", args)
+	return err
 }
 
 func GetTorrentJSONFieldsList() []string {
