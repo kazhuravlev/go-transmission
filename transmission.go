@@ -36,6 +36,38 @@ type Response struct {
 	Tag       int       `json:"tag"`
 }
 
+type TorrentAddRequest struct {
+	Cookies           string `json:"cookies"`
+	DownloadDir       string `json:"download-dir"`
+	Filename          string `json:"filename"`
+	Metainfo          string `json:"metainfo"`
+	Paused            bool   `json:"paused"`
+	PeerLimit         int    `json:"peer-limit"`
+	BandwidthPriority int    `json:"bandwidthPriority"`
+	FilesWanted       []int  `json:"files-wanted"`
+	FilesUnwanted     []int  `json:"files-unwanted"`
+	PriorityHigh      []int  `json:"priority-high"`
+	PriorityLow       []int  `json:"priority-low"`
+	PriorityNormal    []int  `json:"priority-normal"`
+}
+
+func (t TorrentAddRequest) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"cookies":           t.Cookies,
+		"download-dir":      t.DownloadDir,
+		"filename":          t.Filename,
+		"metainfo":          t.Metainfo,
+		"paused":            t.Paused,
+		"peer-limit":        t.PeerLimit,
+		"bandwidthPriority": t.BandwidthPriority,
+		"files-wanted":      t.FilesWanted,
+		"files-unwanted":    t.FilesUnwanted,
+		"priority-high":     t.PriorityHigh,
+		"priority-low":      t.PriorityLow,
+		"priority-normal":   t.PriorityNormal,
+	}
+}
+
 type TorrentSetRequest struct {
 	BandwidthPriority   int             `json:"bandwidthPriority"`
 	DownloadLimit       int             `json:"downloadLimit"`
@@ -374,6 +406,36 @@ func (t *TransmissionClient) TorrentReannounce(ids []int) error {
 
 func (t *TransmissionClient) TorrentSet(req TorrentSetRequest) error {
 	_, err := t.CallMethod("torrent-set", req.AsMap())
+	return err
+}
+
+func (t *TransmissionClient) TorrentAdd(req TorrentAddRequest) (Response, error) {
+	return t.CallMethod("torrent-add", req.AsMap())
+}
+
+func (t *TransmissionClient) TorrentRemove(ids []int, delete_local_data bool) error {
+	_, err := t.CallMethod("torrent-remove", map[string]interface {}{
+		"ids": ids,
+		"delete-local-data": delete_local_data,
+	})
+	return err
+}
+
+func (t *TransmissionClient) TorrentSetLocation (ids []int, location string, move bool) error {
+	_, err := t.CallMethod("torrent-set-location", map[string]interface {}{
+		"ids": ids,
+		"location": location,
+		"move": move,
+	})
+	return err
+}
+
+func (t *TransmissionClient) TorrentRenamePath (ids []int, path string, name string) error {
+	_, err := t.CallMethod("torrent-rename-path", map[string]interface {}{
+		"ids": ids,
+		"path": path,
+		"name": name,
+	})
 	return err
 }
 
